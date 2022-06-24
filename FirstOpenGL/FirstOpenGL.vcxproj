@@ -150,10 +150,10 @@
     <ClInclude Include="Soruce\Shader.h" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Shaders\Shader.fs" />
+    <Compile Include="Shaders\Shader.sfs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Shaders\Shader.vs" />
+    <Content Include="Shaders\Shader.svs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
