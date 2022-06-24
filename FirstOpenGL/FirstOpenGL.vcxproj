@@ -143,7 +143,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />
+    <ClCompile Include="Soruce\Shader.cpp" />
     <ClCompile Include="Source.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Soruce\Shader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Shaders\Shader.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Shaders\Shader.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
