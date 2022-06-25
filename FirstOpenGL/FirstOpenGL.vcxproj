@@ -144,16 +144,20 @@
   <ItemGroup>
     <ClCompile Include="glad.c" />
     <ClCompile Include="Soruce\Shader.cpp" />
+    <ClCompile Include="Soruce\stb_image.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Soruce\Shader.h" />
+    <ClInclude Include="Soruce\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Shaders\Shader.sfs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Shaders\Shader.svs" />
+    <Content Include="Textures\container.jpg" />
+    <Content Include="Textures\wall.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
