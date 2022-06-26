@@ -156,6 +156,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Shaders\Shader.svs" />
+    <Content Include="Textures\awesomeface.png" />
     <Content Include="Textures\container.jpg" />
     <Content Include="Textures\wall.jpg" />
   </ItemGroup>
