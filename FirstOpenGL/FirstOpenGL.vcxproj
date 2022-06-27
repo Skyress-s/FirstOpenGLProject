@@ -156,6 +156,8 @@
     <Compile Include="Shaders\Shader.sfs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Shaders\LightContainer.sfs" />
+    <Content Include="Shaders\LightContainer.svs" />
     <Content Include="Shaders\Shader.svs" />
     <Content Include="Textures\awesomeface.png" />
     <Content Include="Textures\container.jpg" />

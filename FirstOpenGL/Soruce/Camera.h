@@ -14,7 +14,7 @@ const glm::vec3 UP = glm::vec3(0,1,0);
 
 const float YAW = -90.f;
 const float PITCH = 0.f;
-const float SPEED = 20.5f;
+const float SPEED = 5.5f;
 const float SENSETIVITY = 0.05f;
 const float FOV = 60.f;
 
@@ -45,6 +45,7 @@ public:
         worldUp = _up;
         yaw = _yaw;
         pitch = _pitch;
+        UpdateCameraVectors();
     }
     
     // returns the view matrix calculated using Euler Angles and the LookAt Matrix
@@ -53,10 +54,11 @@ public:
         // return SelfLookAtImplementation(position, position + forward, up);
     }
 
-    void ProcessKeyboard(glm::vec2 input, float deltaTime) {
+    void ProcessKeyboard(glm::vec3 input, float deltaTime) {
         float velocity = deltaTime * speed;
         position += right * input.x * velocity;
-        position += forward * input.y * velocity;
+        position += forward * input.z * velocity;
+        position += up * input.y * velocity;
     }
 
     void ProcessMouseMovement(float xoffset, float yoffset, GLboolean bConstrainPitch = true, GLboolean bInvertY = true) {
@@ -122,7 +124,6 @@ private:
 
         return rotation * translation;
     }
-    
 };
 
 
