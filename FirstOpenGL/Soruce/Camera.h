@@ -49,8 +49,8 @@ public:
     
     // returns the view matrix calculated using Euler Angles and the LookAt Matrix
     glm::mat4 GetViewMatrix() {
-        // return glm::lookAt(position, position + forward, up);
-        return SelfLookAtImplementation(position, position + forward, up);
+        return glm::lookAt(position, position + forward, up);
+        // return SelfLookAtImplementation(position, position + forward, up);
     }
 
     void ProcessKeyboard(glm::vec2 input, float deltaTime) {
