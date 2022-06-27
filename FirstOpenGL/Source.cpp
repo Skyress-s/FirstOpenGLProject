@@ -10,21 +10,23 @@
 //other
 #include "Soruce/Shader.h"
 #include "Soruce/stb_image.h"
+#include "Soruce/Camera.h"
 
-//vertex shader code in GLSL
+
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-//very ugly global variables
-glm::vec3 cameraPosition    = glm::vec3(0.0f,0.0f,3.0f);
-glm::vec3 cameraFront       = glm::vec3(0.0f,0.0f,-1.0f);
-glm::vec3 cameraUp          = glm::vec3(0.0f,1.0f,0.0f);
+//movement / camera
+Camera camera(glm::vec3(0.f,0.f,3.f));
+float mouseLastX = SCR_WIDTH / 2.f;
+float mouseLastY = SCR_HEIGHT / 2.f;
+bool bFirstMouse = true;
 
 //very ugly time global variables
 float deltaTime = 0.0f; // the time between the current and last frame
 float lastFrame = 0.0f; // the of last frame
 
-
+//vertex shader code in GLSL
 const char* vertexShaderSoruceShaderTut = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "layout (location = 1) in vec3 aColor;\n"
@@ -47,6 +49,10 @@ const char* fragmentShaderSoruceShaderTut = "#version 330 core\n"
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 void processInput(GLFWwindow* window);
+
+void mouseCallback(GLFWwindow* window, double xpos, double ypos);
+
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
 int testMain() {
     // glfw: initialize and configure
@@ -227,7 +233,21 @@ int testMain() {
 int main() {
 // testMain();
 //     return 0;
+    glm::mat4 mat(1);
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            mat[i][j] = 4 * i + j;
+        }
+    }
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            std::cout << mat[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+    
 
+    
     //end testing
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -253,6 +273,16 @@ int main() {
         return -1;
     }
 
+    //mouse settings
+    //------------------------------------------------
+    //hide and capture mouse
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //setup mouse input callback
+    glfwSetCursorPosCallback(window, mouseCallback);
+    
+    //scroll callback
+    glfwSetScrollCallback(window, scrollCallback);
+    
     //setting up depth test
     glEnable(GL_DEPTH_TEST);
 
@@ -429,9 +459,7 @@ int main() {
 
     //defining the matricies to go from local space to clip space
     //------------------------------------------------
-    //projection matrix
-    glm::mat4 projection;
-    projection = glm::perspective(glm::radians(70.f), 800.f / 600.f, 0.1f, 100.f);
+    
     /*//view matrix
     glm::mat4 view = glm::mat4(1.f);
     view = glm::translate(view, glm::vec3(0.f,0.f,-5.f));*/
@@ -473,9 +501,12 @@ int main() {
         glBindVertexArray(VAO1);
 
         //camera stuff
+        //projection matrix
+        glm::mat4 projection;
+        projection = glm::perspective(glm::radians(camera.fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.f);
+        //view matrix
         glm::mat4 view;
-        view = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
-
+        view = camera.GetViewMatrix();
         
         //activate shader
         shader.use();
@@ -523,15 +554,31 @@ void processInput(GLFWwindow* window) {
         glfwSetWindowShouldClose(window, true);
 
     //movement
-    float scaledCameraSpeed = 2.5f * deltaTime;
+    glm::vec2 keyboardAxis = glm::vec2(0.f);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        cameraPosition += cameraFront * scaledCameraSpeed;
+        keyboardAxis.y += 1.f;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        cameraPosition += -cameraFront * scaledCameraSpeed;
+        keyboardAxis.y += -1.f;
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        cameraPosition += -glm::normalize(glm::cross(cameraFront, cameraUp)) * scaledCameraSpeed;
+        keyboardAxis.x += -1.f;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * scaledCameraSpeed;
-    
+        keyboardAxis.x += 1.f;
+    camera.ProcessKeyboard(keyboardAxis, deltaTime);
+}
 
+void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
+    if (bFirstMouse) {
+        bFirstMouse = false;
+        mouseLastX = xpos;
+        mouseLastY = ypos;
+    }
+    float offsetX = xpos - mouseLastX;
+    float offsetY = ypos - mouseLastY;
+    mouseLastX = xpos;
+    mouseLastY = ypos;
+    
+    camera.ProcessMouseMovement(offsetX, offsetY, true, true);
+}
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+    camera.ProcessMouseScroll(yoffset);
 }

@@ -148,6 +148,7 @@
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Soruce\Camera.h" />
     <ClInclude Include="Soruce\Shader.h" />
     <ClInclude Include="Soruce\stb_image.h" />
   </ItemGroup>
