@@ -161,6 +161,10 @@
     <Content Include="Shaders\Shader.svs" />
     <Content Include="Textures\awesomeface.png" />
     <Content Include="Textures\container.jpg" />
+    <Content Include="Textures\container2.png" />
+    <Content Include="Textures\container2_specular.png" />
+    <Content Include="Textures\lighting_maps_specular_color.png" />
+    <Content Include="Textures\matrix.jpg" />
     <Content Include="Textures\wall.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
