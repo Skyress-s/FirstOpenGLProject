@@ -270,7 +270,13 @@ int main() {
         //view matrix
         glm::mat4 view = camera.GetViewMatrix();
         
-        
+        //light positions
+        glm::vec3 pointLightPositions[] = {
+            glm::vec3( 0.7f,  0.2f,  2.0f),
+            glm::vec3( 2.3f, -3.3f, -4.0f),
+            glm::vec3(-4.0f,  2.0f, -12.0f),
+            glm::vec3( 0.0f,  0.0f, -3.0f)
+            };  
         
             
         
@@ -282,9 +288,6 @@ int main() {
         containerShader.setInt("material.emission", 2);
         
         
-        //updates shaders matricies
-        containerShader.setMat4("view", view);
-        containerShader.setMat4("projection", projection);
 
         //Matierial properties
         containerShader.setVec3("material.ambient", glm::vec3(1.f));
@@ -297,21 +300,49 @@ int main() {
         glm::vec3 lightDiff =  glm::vec3(1.0f); 
         glm::vec3 lightAmbient =  glm::vec3(0.1f);
         glm::vec3 lightSpecular = glm::vec3(1.f);
+
+        //atteniuation
+        std::vector<float> attenuation = {1.f, 0.07f, 0.016f};
+
+        //directional light
+        containerShader.setVec3("dirlight.direction", glm::vec3(1.f,1.f,1.f));
+        containerShader.setVec3("dirlight.ambient", lightAmbient);
+        containerShader.setVec3("dirlight.diffuse", lightDiff);
+        containerShader.setVec3("dirlight.specular", lightSpecular);
+
+        //point lights
+        for (int i = 0; i < 4; ++i) {
+            containerShader.setVec3("pointLights[" + std::to_string(i) + "].position", pointLightPositions[i]);
+            
+            containerShader.setFloat("pointLights[" + std::to_string(i) + "].constant", attenuation[0]);
+            containerShader.setFloat("pointLights[" + std::to_string(i) + "].linear", attenuation[1]);
+            containerShader.setFloat("pointLights[" + std::to_string(i) + "].quadratic", attenuation[2]);
+
+            containerShader.setVec3("pointLights[" + std::to_string(i) + "].ambient", lightAmbient);
+            containerShader.setVec3("pointLights[" + std::to_string(i) + "].diffuse", lightDiff);
+            containerShader.setVec3("pointLights[" + std::to_string(i) + "].specular", lightSpecular);
+        }
+
+        //spotLight
+        containerShader.setVec3("spotLight.position", camera.position);
+        containerShader.setVec3("spotLight.direction", camera.forward);
+        containerShader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+        containerShader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+        containerShader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+        containerShader.setFloat("spotLight.constant", 1.0f);
+        containerShader.setFloat("spotLight.linear", 0.09f);
+        containerShader.setFloat("spotLight.quadratic", 0.032f);
+        containerShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+        containerShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
         
-        //light properties
-        containerShader.setVec3("light.ambient",  lightAmbient);
-        containerShader.setVec3("light.diffuse",  lightDiff); // darken diffuse light a bit
-        containerShader.setVec3("light.specular", lightSpecular);
-        containerShader.setFloat("light.constant", 1.f);
-        containerShader.setFloat("light.linear", 0.09f);
-        containerShader.setFloat("light.quadratic", 0.032f);	
-        //update cointainer colors
-        containerShader.setVec3("light.position", camera.position);
-        containerShader.setVec3("light.direction", camera.forward);
-        containerShader.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
-        containerShader.setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
+        
         
         containerShader.setVec3("viewPos", camera.position);
+
+
+        //updates shaders matricies
+        containerShader.setMat4("view", view);
+        containerShader.setMat4("projection", projection);
         
         //bind vertex array
         glActiveTexture(GL_TEXTURE0);
@@ -344,14 +375,16 @@ int main() {
         lightShader.setMat4("projection", projection);
         lightShader.setVec3("lightColor", lightDiff);
         
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, lightPosition);
-        model = glm::scale(model, glm::vec3(0.2f));
+        for (int i = 0; i < 4; ++i) {
+            
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, pointLightPositions[i]);
+            model = glm::scale(model, glm::vec3(0.2f));
         
-        lightShader.setMat4("model", model);
-        
-        glBindVertexArray(LightVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+            lightShader.setMat4("model", model);
+            glBindVertexArray(LightVAO);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
         
         //swap buffers and check and call events
         glfwSwapBuffers(window);
