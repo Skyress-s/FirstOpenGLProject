@@ -161,6 +161,9 @@
     <Content Include="Models\ao.jpg" />
     <Content Include="Models\backpack.mtl" />
     <Content Include="Models\backpack.obj" />
+    <Content Include="Models\BlenderBox\aBox.mtl" />
+    <Content Include="Models\BlenderBox\aBox.obj" />
+    <Content Include="Models\BlenderBox\diff.jpg" />
     <Content Include="Models\diffuse.jpg" />
     <Content Include="Models\normal.png" />
     <Content Include="Models\roughness.jpg" />

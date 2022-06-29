@@ -4,7 +4,6 @@ out vec4 FragColor;
 struct Material {
     sampler2D diffuse;
     sampler2D specular;
-    sampler2D emission;
     float shininess;
 };
 
@@ -16,7 +15,6 @@ struct DirLight {
     vec3 diffuse;
     vec3 specular;
 };  
-uniform DirLight dirLight;
 
 struct PointLight {    
     vec3 position;
@@ -29,8 +27,7 @@ struct PointLight {
     vec3 diffuse;
     vec3 specular;
 };  
-#define NR_POINT_LIGHTS 4
-uniform PointLight pointLights[NR_POINT_LIGHTS];
+#define NR_POINT_LIGHTS 1
 
 struct SpotLight{
     vec3 position;
@@ -50,13 +47,15 @@ struct SpotLight{
     
 };
 
-uniform SpotLight spotLight;
 
 in vec3 Normal;  
 in vec3 FragPos;  
 in vec2 TexCoords;
   
 uniform Material material;
+uniform DirLight dirLight;
+uniform PointLight pointLights[NR_POINT_LIGHTS];
+uniform SpotLight spotLight;
 uniform vec3 viewPos; 
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir); 
