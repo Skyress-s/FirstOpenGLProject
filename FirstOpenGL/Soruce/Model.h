@@ -1,4 +1,6 @@
-﻿#ifndef MODEL_H
+﻿
+
+#ifndef MODEL_H
 #define MODEL_H
 
 #include <glad/glad.h> 
@@ -45,14 +47,13 @@ public:
             meshes[i].Draw(shader);
     }
     
-    
 private:
     // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
     void loadModel(string const &path)
     {
         // read file via ASSIMP
         Assimp::Importer importer;
-        const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+        const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals |/* aiProcess_FlipUVs |*/ aiProcess_CalcTangentSpace);
         // check for errors
         if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
         {
@@ -244,7 +245,4 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
     return textureID;
 }
 #endif
-
-
-
 

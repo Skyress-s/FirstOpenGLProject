@@ -158,9 +158,13 @@
     <Compile Include="Shaders\BoxShaderF.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Models\ao.jpg" />
     <Content Include="Models\backpack.mtl" />
     <Content Include="Models\backpack.obj" />
     <Content Include="Models\diffuse.jpg" />
+    <Content Include="Models\normal.png" />
+    <Content Include="Models\roughness.jpg" />
+    <Content Include="Models\source_attribution.txt" />
     <Content Include="Models\specular.jpg" />
     <Content Include="Shaders\LightContainer.sfs" />
     <Content Include="Shaders\LightContainer.svs" />

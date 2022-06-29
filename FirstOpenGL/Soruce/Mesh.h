@@ -1,4 +1,6 @@
-﻿#ifndef MESH_H
+﻿
+
+#ifndef MESH_H
 #define MESH_H
 
 #include <glad/glad.h> // holds all OpenGL type declarations
@@ -7,6 +9,7 @@
 #include <glm/glm/gtc/matrix_transform.hpp>
 
 #include "Shader.h"
+
 #include <string>
 #include <vector>
 using namespace std;
@@ -143,5 +146,4 @@ private:
     }
 };
 #endif
-
 
