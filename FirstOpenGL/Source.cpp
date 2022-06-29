@@ -11,6 +11,7 @@
 #include "Soruce/Shader.h"
 #include "Soruce/stb_image.h"
 #include "Soruce/Camera.h"
+#include "Soruce/Model.h"
 
 
 const unsigned int SCR_WIDTH = 800;
@@ -43,8 +44,7 @@ unsigned int loadTexture(const char* path);
 
 
 int main() {
-// testMain();
-//     return 0;
+    
     glm::mat4 mat(1);
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 4; ++j) {
@@ -99,8 +99,8 @@ int main() {
     
     //building and compiling our shader program
     // -----------------------------------------
-    Shader containerShader("Shaders/Shader.svs",
-        "Shaders/Shader.sfs");
+    Shader containerShader("Shaders/BoxShaderV.glsl",
+        "Shaders/BoxShaderF.glsl");
 
     Shader lightShader("Shaders/LightContainer.svs",
         "Shaders/LightContainer.sfs");
@@ -228,6 +228,12 @@ int main() {
     unsigned int texture2 = loadTexture("Textures/container2_specular.png");
 
     unsigned int texture3 = loadTexture("Textures/matrix.jpg");
+
+
+
+    //custom models
+    Shader ourShader("Shaders/ModelLoadV.glsl", "Shaders/ModelLoadF.glsl");
+    Model model("Models/backpack.obj");
     
     
     // uncomment this call to draw in wireframe polygons.
@@ -385,6 +391,7 @@ int main() {
             glBindVertexArray(LightVAO);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+
         
         //swap buffers and check and call events
         glfwSwapBuffers(window);
