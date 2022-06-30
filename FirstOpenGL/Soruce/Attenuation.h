@@ -24,36 +24,19 @@ public:
 
     
     const static AttenuationDistance attenuations[12]; 
-private:
 
-
-/*{
-          AttenuationDistance(1.0f,0.7f,1.8f), 
-          AttenuationDistance(1.0f,0.35f,0.44f), 
-          AttenuationDistance(1.0f,0.22f,0.2f), 
-          AttenuationDistance(1.0f,0.14f,0.7f), 
-          AttenuationDistance(1.0f,0.09f,0.032f), 
-          AttenuationDistance(1.0f,0.07f,0.017f), 
-          AttenuationDistance(1.0f,0.045f,0.0075f), 
-          AttenuationDistance(1.0f,0.027f,0.0028f), 
-          AttenuationDistance(1.0f,0.022f,0.0019f), 
-          AttenuationDistance(1.0f,0.014f,0.0007f), 
-          AttenuationDistance(1.0f,0.007f,0.0002f), 
-          AttenuationDistance(1.0f,0.0014f,0.000007f)
-      };    */
-    
 };
 AttenuationDistance Attenuation::current = AttenuationDistance(1.0f,0.045f,0.0075f); 
 const AttenuationDistance Attenuation::attenuations[12] = {   AttenuationDistance(1.0f,0.7f,1.8f), 
-                                                        AttenuationDistance(1.0f,0.35f,0.44f), 
-                                                        AttenuationDistance(1.0f,0.22f,0.2f), 
-                                                        AttenuationDistance(1.0f,0.14f,0.7f), 
-                                                        AttenuationDistance(1.0f,0.09f,0.032f), 
-                                                        AttenuationDistance(1.0f,0.07f,0.017f), 
-                                                        AttenuationDistance(1.0f,0.045f,0.0075f), 
-                                                        AttenuationDistance(1.0f,0.027f,0.0028f), 
-                                                        AttenuationDistance(1.0f,0.022f,0.0019f), 
-                                                        AttenuationDistance(1.0f,0.014f,0.0007f), 
-                                                        AttenuationDistance(1.0f,0.007f,0.0002f), 
-                                                        AttenuationDistance(1.0f,0.0014f,0.000007f)
-                                                           }; 
+                        AttenuationDistance(1.0f,0.35f,0.44f), 
+                        AttenuationDistance(1.0f,0.22f,0.2f), 
+                        AttenuationDistance(1.0f,0.14f,0.7f), 
+                        AttenuationDistance(1.0f,0.09f,0.032f), 
+                        AttenuationDistance(1.0f,0.07f,0.017f), 
+                        AttenuationDistance(1.0f,0.045f,0.0075f), 
+                        AttenuationDistance(1.0f,0.027f,0.0028f), 
+                        AttenuationDistance(1.0f,0.022f,0.0019f), 
+                        AttenuationDistance(1.0f,0.014f,0.0007f), 
+                        AttenuationDistance(1.0f,0.007f,0.0002f), 
+                        AttenuationDistance(1.0f,0.0014f,0.000007f)
+                       }; 
