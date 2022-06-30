@@ -27,7 +27,8 @@ public:
 
 };
 AttenuationDistance Attenuation::current = AttenuationDistance(1.0f,0.045f,0.0075f); 
-const AttenuationDistance Attenuation::attenuations[12] = {   AttenuationDistance(1.0f,0.7f,1.8f), 
+const AttenuationDistance Attenuation::attenuations[12] = {
+                        AttenuationDistance(1.0f,0.7f,1.8f), 
                         AttenuationDistance(1.0f,0.35f,0.44f), 
                         AttenuationDistance(1.0f,0.22f,0.2f), 
                         AttenuationDistance(1.0f,0.14f,0.7f), 
