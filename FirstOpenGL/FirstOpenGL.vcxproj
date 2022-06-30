@@ -148,6 +148,7 @@
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Soruce\Attenuation.h" />
     <ClInclude Include="Soruce\Camera.h" />
     <ClInclude Include="Soruce\Mesh.h" />
     <ClInclude Include="Soruce\Model.h" />
@@ -174,6 +175,8 @@
     <Content Include="Shaders\BoxShaderV.glsl" />
     <Content Include="Shaders\ModelLoadF.glsl" />
     <Content Include="Shaders\ModelLoadV.glsl" />
+    <Content Include="Shaders\ShadedModelLoadF.glsl" />
+    <Content Include="Shaders\ShadedModelLoadV.glsl" />
     <Content Include="Textures\awesomeface.png" />
     <Content Include="Textures\container.jpg" />
     <Content Include="Textures\container2.png" />

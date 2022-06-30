@@ -80,10 +80,17 @@ public:
         UpdateCameraVectors();
     }
 
-    void ProcessMouseScroll(float yoffset) {
-        fov += -yoffset * 5.f;
-        fov = fov < 1.f ? 1.f : fov;
-        fov = fov > 80.f ? 80.f : fov;
+    void ProcessMouseScroll(float yoffset, bool bFOV = false) {
+        if (bFOV) {
+            fov += -yoffset * 5.f;
+            fov = fov < 1.f ? 1.f : fov;
+            fov = fov > 80.f ? 80.f : fov;
+        }
+        else {
+            speed += yoffset;
+            speed = speed > 100.f ? 100.f : speed;
+            speed = speed < 1.f ? 1.f : speed;
+        }
     }
 
     

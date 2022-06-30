@@ -8,6 +8,7 @@
 #include <glm/glm/gtc/type_ptr.hpp>
 
 //other
+#include "Soruce/Attenuation.h"
 #include "Soruce/Shader.h"
 #include "Soruce/stb_image.h"
 #include "Soruce/Camera.h"
@@ -101,8 +102,12 @@ int main() {
     
     
     //custom models
-    Shader ourShader("Shaders/ModelLoadV.glsl", "Shaders/ModelLoadF.glsl");
+    Shader ourShader("Shaders/ShadedModelLoadV.glsl", "Shaders/ShadedModelLoadF.glsl");
     Model ourModel("Models/backpack.obj");
+
+    //light
+    Shader lightShader("Shaders/LightContainer.svs", "Shaders/LightContainer.sfs");
+    Model lightModel("Models/BlenderBox/aBox.obj");
     
     
     // uncomment this call to draw in wireframe polygons.
@@ -127,22 +132,60 @@ int main() {
         //clears Z-buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        const float radius = 3.f;
+        glm::vec3 lightPostion = glm::vec3(sin(time), 0.f, cos(time)) * radius;
+        
+        
+        // model rendering
+        //------------------------------------------------
+        
         // don't forget to enable shader before setting uniforms
         ourShader.use();
 
+        // set params to model
+        Attenuation::setDistance(EAttenuationDistance::E100);
+        ourShader.setVec3("pointLights[0].position",lightPostion);
+        ourShader.setFloat("pointLights[0].constant", Attenuation::current.constant);
+        ourShader.setFloat("pointLights[0].linear", Attenuation::current.linear);
+        ourShader.setFloat("pointLights[0].quadratic", Attenuation::current.quadratic);
+        ourShader.setVec3("pointLights[0].ambient", glm::vec3(0.1f));
+        ourShader.setVec3("pointLights[0].diffuse", glm::vec3(1.f));
+        ourShader.setVec3("pointLights[0].specular", glm::vec3(1.f));
+        ourShader.setFloat("shineiness", 32.f);
+        ourShader.setVec3("viewPos", camera.position);
+
         // view/projection transformations
-        
         glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
         ourShader.setMat4("projection", projection);
         ourShader.setMat4("view", view);
 
-        // render the loaded model
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
         model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
+
+        
+        // render the loaded model
         ourModel.Draw(ourShader);
+
+        //light rendering
+        //------------------------------------------------
+        lightShader.use();
+        
+        lightShader.setMat4("projection", projection);
+        lightShader.setMat4("view", view);
+        model = glm::mat4(1.f);
+        model = glm::translate(model, lightPostion);
+        model = glm::scale(model, glm::vec3(0.2f));
+        lightShader.setMat4("model", model);
+
+        //color
+        lightShader.setVec3("lightColor", glm::vec3(1.f));
+
+        lightModel.Draw(lightShader);
+        
+        
         
 
         
@@ -198,10 +241,10 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 }
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-        camera.ProcessMouseScroll(yoffset);
+        camera.ProcessMouseScroll(yoffset, true);
     }
     else {
-        camera.speed += yoffset;
+        camera.ProcessMouseScroll(yoffset, false);
     }
 }
 unsigned int loadTexture(const char* path) {
