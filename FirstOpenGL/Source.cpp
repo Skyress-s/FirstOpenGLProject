@@ -17,6 +17,8 @@
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+const unsigned int GRID_WIDTH = 4;
+const unsigned int GRID_HEIGHT = 4;
 
 //movement / camera
 Camera camera(glm::vec3(0.f,0.f,3.f));
@@ -43,21 +45,8 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 unsigned int loadTexture(const char* path);
 
 int main() {
-    
-    glm::mat4 mat(1);
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            mat[i][j] = 4 * i + j;
-        }
-    }
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            std::cout << mat[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
-    
-    //end testing
+
+#pragma region GLFW
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -97,6 +86,7 @@ int main() {
     //setting up depth test
     glEnable(GL_DEPTH_TEST);
 
+#pragma endregion 
     
     
     //custom models
@@ -110,6 +100,7 @@ int main() {
     
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    
     //render loop
     while (!glfwWindowShouldClose(window))
     {
