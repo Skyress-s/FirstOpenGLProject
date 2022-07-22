@@ -42,8 +42,6 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
 unsigned int loadTexture(const char* path);
 
-
-
 int main() {
     
     glm::mat4 mat(1);
@@ -192,10 +190,7 @@ int main() {
         //swap buffers and check and call events
         glfwSwapBuffers(window);
         glfwPollEvents();
-        
-        
     }
-
 
     glfwTerminate();
     return 0;

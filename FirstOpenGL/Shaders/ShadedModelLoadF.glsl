@@ -1,4 +1,4 @@
-﻿#version 330 core
+#version 330 core
 
 // struct Material {
 //     sampler2D diffuse;
@@ -56,8 +56,7 @@ in vec2 TexCoords;
 uniform DirLight dirLight;
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 uniform SpotLight spotLight;
-uniform vec3 viewPos; 
-uniform float shineiness;
+uniform vec3 viewPos;
 
 //textures handled by Model class
 uniform sampler2D texture_diffuse1;
@@ -90,7 +89,7 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir){
     float diff = max(dot(normal, lightDir), 0.0);
     // specular shading
     vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), shineiness);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), /*shineiness*/ 20.0);
     // combine results
     vec3 ambient  = light.ambient  * vec3(texture(texture_diffuse1, TexCoords));
     vec3 diffuse  = light.diffuse  * diff * vec3(texture(texture_diffuse1, TexCoords));
@@ -105,7 +104,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     float diff = max(dot(normal, lightDir), 0.0);
     // specular shading
     vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), shineiness);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), /*shineiness*/ 20.0);
     // attenuation
     float distance    = length(light.position - fragPos);
     float attenuation = 1.0 / (light.constant + light.linear * distance + 
@@ -129,7 +128,7 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir){
         float diff = max(dot(normal, lightDir), 0.0);
         // specular shading
         vec3 reflectDir = reflect(-lightDir, normal);
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), shineiness);
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), /*shineiness*/ 20.0);
         // attenuation
         float distance = length(light.position - fragPos);
         float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    

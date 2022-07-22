@@ -45,7 +45,13 @@ public:
         fShaderFile.close();
         // convert stream into string
         vertexCode   = vShaderStream.str();
-        fragmentCode = fShaderStream.str();	
+        fragmentCode = fShaderStream.str();
+
+        //remmoves the first char
+        // fragmentCode.erase(0,3);
+        // vertexCode.erase(0,3);
+        
+        std::cout << vertexCode << std::endl;
     }
     catch(std::ifstream::failure e)
     {
@@ -65,7 +71,7 @@ public:
     glCompileShader(vertex);
 
     // show compile error if any
-    checkCompileErrors(vertex, ECompileType::EShader);
+    checkCompileErrors(vertex, ECompileType::EShader, "VERTEX");
 
     // compile fragment shader
     fragment = glCreateShader(GL_FRAGMENT_SHADER);
@@ -73,8 +79,8 @@ public:
     glCompileShader(fragment);
 
     // show compile errors if any
-    checkCompileErrors(fragment, ECompileType::EShader);
-
+    checkCompileErrors(fragment, ECompileType::EShader, "FRAGMENT");
+    
     // shdaer program
     ID = glCreateProgram();
     glAttachShader(ID, vertex);
@@ -158,7 +164,7 @@ public:
     }
 private:
     //utility function to check for comile errors
-    void checkCompileErrors(GLint shader, ECompileType type) {
+    void checkCompileErrors(GLint shader, ECompileType type, std::string flag = "") {
         int success;
         char infoLog[1024];
 
@@ -166,7 +172,7 @@ private:
             glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
             if (!success) {
                 glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-                std::cout << "ERROR::SHADER::COMPILATION_FAILED of type " << getEnumToString(type) << "\n" << infoLog << "\n -- ------------------------------ -- " << std::endl;  
+                std::cout << flag <<"::ERROR::SHADER::COMPILATION_FAILED of type " << getEnumToString(type) << "\n" << infoLog << "\n -- ------------------------------ -- " << std::endl;  
             }
         }
         else if (type == ECompileType::EProgram) {

@@ -78,8 +78,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>G:\libraries\OpenGL\include;$(IncludePath)</IncludePath>
-    <LibraryPath>G:\libraries\OpenGL\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\OFFLINE\OpenGL\Libraries\Include;G:\libraries\OpenGL\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\OFFLINE\OpenGL\Libraries\Lib;G:\libraries\OpenGL\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -164,7 +164,6 @@
     <Content Include="Models\backpack.obj" />
     <Content Include="Models\BlenderBox\aBox.mtl" />
     <Content Include="Models\BlenderBox\aBox.obj" />
-    <Content Include="Models\BlenderBox\diff.jpg" />
     <Content Include="Models\diffuse.jpg" />
     <Content Include="Models\normal.png" />
     <Content Include="Models\roughness.jpg" />

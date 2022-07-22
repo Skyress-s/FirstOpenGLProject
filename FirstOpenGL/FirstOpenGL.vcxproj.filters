@@ -44,5 +44,8 @@
     <ClInclude Include="Soruce\Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Soruce\Attenuation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
