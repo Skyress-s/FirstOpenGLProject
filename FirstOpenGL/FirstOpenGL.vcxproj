@@ -143,17 +143,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />
+    <ClCompile Include="Soruce\GameObject.cpp" />
+    <ClCompile Include="Soruce\GridCube.cpp" />
     <ClCompile Include="Soruce\Shader.cpp" />
     <ClCompile Include="Soruce\stb_image.cpp" />
+    <ClCompile Include="Soruce\Transfrom\Transform.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Soruce\Attenuation.h" />
     <ClInclude Include="Soruce\Camera.h" />
+    <ClInclude Include="Soruce\GameObject.h" />
+    <ClInclude Include="Soruce\GridCube.h" />
     <ClInclude Include="Soruce\Mesh.h" />
     <ClInclude Include="Soruce\Model.h" />
     <ClInclude Include="Soruce\Shader.h" />
     <ClInclude Include="Soruce\stb_image.h" />
+    <ClInclude Include="Soruce\Transfrom\Transform.h" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Shaders\BoxShaderF.glsl" />

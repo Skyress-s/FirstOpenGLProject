@@ -12,13 +12,16 @@
 #include "Soruce/Shader.h"
 #include "Soruce/stb_image.h"
 #include "Soruce/Camera.h"
+#include "Soruce/GameObject.h"
 #include "Soruce/Model.h"
 
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-const unsigned int GRID_WIDTH = 4;
-const unsigned int GRID_HEIGHT = 4;
+const unsigned int GRID_WIDTH = 10;
+const unsigned int GRID_DEPTH = 7;
+
+std::vector<GameObject> gameObjects = std::vector<GameObject>(0);
 
 //movement / camera
 Camera camera(glm::vec3(0.f,0.f,3.f));
@@ -87,16 +90,37 @@ int main() {
     glEnable(GL_DEPTH_TEST);
 
 #pragma endregion 
-    
-    
-    //custom models
-    Shader ourShader("Shaders/ShadedModelLoadV.glsl", "Shaders/ShadedModelLoadF.glsl");
-    Model ourModel("Models/backpack.obj");
 
-    //light
-    Shader lightShader("Shaders/LightContainer.svs", "Shaders/LightContainer.sfs");
-    Model lightModel("Models/BlenderBox/aBox.obj");
+    //grid
+
+    //populatiing grid
+    for (unsigned int i = 0; i < GRID_WIDTH; ++i) {
+        for (unsigned int j = 0; j < GRID_DEPTH; ++j) {
+            GameObject gameObject = GameObject();
+            gameObject.transform.position = glm::vec3(j,0.f, i);
+            gameObjects.push_back(gameObject);
+            
+        }
+    }
+
+    // getting cube model
+    Model gridModel("Models/BlenderBox/aBox.obj");
+    Shader gridShader("Shaders/Unlit/UnlitV.glsl", "Shaders/Unlit/UnlitF.glsl");
+
+#pragma region CustomModels
+    // //custom models
+    // Shader ourShader("Shaders/ShadedModelLoadV.glsl", "Shaders/ShadedModelLoadF.glsl");
+    // Model ourModel("Models/backpack.obj");
     
+    //light
+    // Shader lightShader("Shaders/LightContainer.svs", "Shaders/LightContainer.sfs");
+    // Model lightModel("Models/BlenderBox/aBox.obj");
+    
+#pragma endregion
+
+
+    glm::mat4 projection = glm::perspective(glm::radians(camera.fov),
+            (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -127,56 +151,88 @@ int main() {
         
         // model rendering
         //------------------------------------------------
-        
-        // don't forget to enable shader before setting uniforms
-        ourShader.use();
 
-        // set params to model
-        Attenuation::setDistance(EAttenuationDistance::E100);
-        ourShader.setVec3("pointLights[0].position",lightPostion);
-        ourShader.setFloat("pointLights[0].constant", Attenuation::current.constant);
-        ourShader.setFloat("pointLights[0].linear", Attenuation::current.linear);
-        ourShader.setFloat("pointLights[0].quadratic", Attenuation::current.quadratic);
-        ourShader.setVec3("pointLights[0].ambient", glm::vec3(0.1f));
-        ourShader.setVec3("pointLights[0].diffuse", glm::vec3(1.f));
-        ourShader.setVec3("pointLights[0].specular", glm::vec3(1.f));
-        ourShader.setFloat("shineiness", 32.f);
-        ourShader.setVec3("viewPos", camera.position);
-
-        // view/projection transformations
-        glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        //matrices
         glm::mat4 view = camera.GetViewMatrix();
-        ourShader.setMat4("projection", projection);
-        ourShader.setMat4("view", view);
 
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
-        ourShader.setMat4("model", model);
+        gridShader.use();
+        gridShader.setMat4("projection", projection);
+        gridShader.setMat4("view", view);
+        
+        //draw cubes
+        for (unsigned int i = 0; i < gameObjects.size(); ++i) {
+            //matrices
+            glm::mat4 model = glm::mat4(1.f); // translate scale rotate
+            model = glm::translate(model, gameObjects[i].transform.position);
+            model = glm::scale(model, gameObjects[i].transform.scale);
+            // model = glm::rotate(model, gameObjects[i].transform.rotation);
+            gridShader.setMat4("model", model);
+
+            //color
+            gridShader.setVec3("Color", glm::vec3(1.0f, 1.0f, 1.0f));
+
+            //draws
+            gridModel.Draw(gridShader);
+        }
+        
+
 
         
-        // render the loaded model
-        ourModel.Draw(ourShader);
-
+        
+        gridModel.Draw(gridShader);
+        
+#pragma region customModels
+        // // don't forget to enable shader before setting uniforms
+        // ourShader.use();
+        //
+        // // set params to model
+        // Attenuation::setDistance(EAttenuationDistance::E100);
+        // ourShader.setVec3("pointLights[0].position",lightPostion);
+        // ourShader.setFloat("pointLights[0].constant", Attenuation::current.constant);
+        // ourShader.setFloat("pointLights[0].linear", Attenuation::current.linear);
+        // ourShader.setFloat("pointLights[0].quadratic", Attenuation::current.quadratic);
+        // ourShader.setVec3("pointLights[0].ambient", glm::vec3(0.1f));
+        // ourShader.setVec3("pointLights[0].diffuse", glm::vec3(1.f));
+        // ourShader.setVec3("pointLights[0].specular", glm::vec3(1.f));
+        // ourShader.setFloat("shineiness", 32.f);
+        // ourShader.setVec3("viewPos", camera.position);
+        //
+        // // view/projection transformations
+        // glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        // glm::mat4 view = camera.GetViewMatrix();
+        // ourShader.setMat4("projection", projection);
+        // ourShader.setMat4("view", view);
+        //
+        // glm::mat4 model = glm::mat4(1.0f);
+        // model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+        // model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+        // ourShader.setMat4("model", model);
+        //
+        //
+        // // render the loaded model
+        // ourModel.Draw(ourShader);
+        //
         //light rendering
         //------------------------------------------------
-        lightShader.use();
+        // lightShader.use();
+        //
+        // lightShader.setMat4("projection", projection);
+        // lightShader.setMat4("view", view);
+        // model = glm::mat4(1.f);
+        // model = glm::translate(model, lightPostion);
+        // model = glm::scale(model, glm::vec3(0.2f));
+        // lightShader.setMat4("model", model);
+        //
+        // //color
+        // lightShader.setVec3("lightColor", glm::vec3(1.f));
+        //
+        // lightModel.Draw(lightShader);
         
-        lightShader.setMat4("projection", projection);
-        lightShader.setMat4("view", view);
-        model = glm::mat4(1.f);
-        model = glm::translate(model, lightPostion);
-        model = glm::scale(model, glm::vec3(0.2f));
-        lightShader.setMat4("model", model);
+        
+# pragma endregion 
 
-        //color
-        lightShader.setVec3("lightColor", glm::vec3(1.f));
-
-        lightModel.Draw(lightShader);
+        //grid
         
-        
-        
-
         
         //swap buffers and check and call events
         glfwSwapBuffers(window);
