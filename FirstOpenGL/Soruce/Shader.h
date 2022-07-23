@@ -51,7 +51,7 @@ public:
         // fragmentCode.erase(0,3);
         // vertexCode.erase(0,3);
         
-        std::cout << vertexCode << std::endl;
+        // std::cout << vertexCode << std::endl;
     }
     catch(std::ifstream::failure e)
     {

@@ -12,8 +12,10 @@
 #include "Soruce/Shader.h"
 #include "Soruce/stb_image.h"
 #include "Soruce/Camera.h"
-#include "Soruce/GameObject.h"
+#include "Soruce/Unity/GameObject.h"
 #include "Soruce/Model.h"
+#include "Soruce/Unity/SimpleScaleAnimationComponent.h"
+#include "Soruce/Unity/Time.h"
 
 
 const unsigned int SCR_WIDTH = 800;
@@ -29,10 +31,6 @@ float mouseLastX = SCR_WIDTH / 2.f;
 float mouseLastY = SCR_HEIGHT / 2.f;
 bool bFirstMouse = true;
 
-//very ugly time global variables
-float deltaTime = 0.0f; // the time between the current and last frame
-float lastFrame = 0.0f; // the of last frame
-
 //light related
 glm::vec3 lightPosition = glm::vec3(1.2f, 1.0f, 2.0f);
 
@@ -45,10 +43,10 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
-unsigned int loadTexture(const char* path);
 
 int main() {
-
+    Time::Init();
+    
 #pragma region GLFW
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -97,6 +95,8 @@ int main() {
     for (unsigned int i = 0; i < GRID_WIDTH; ++i) {
         for (unsigned int j = 0; j < GRID_DEPTH; ++j) {
             GameObject gameObject = GameObject();
+            SimpleScaleAnimationComponent* scaleComponent =new  SimpleScaleAnimationComponent();
+            gameObject.AddComponent(scaleComponent);
             gameObject.transform.position = glm::vec3(j,0.f, i);
             gameObjects.push_back(gameObject);
             
@@ -124,16 +124,21 @@ int main() {
     
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    //START
+    for (int i = 0; i < gameObjects.size(); ++i) {
+        gameObjects[i].Start();
+    }
+
     
     //render loop
     while (!glfwWindowShouldClose(window))
     {
         //handlig time
-        float time = glfwGetTime();
-        deltaTime = time - lastFrame;
-        lastFrame = time;
+        Time::UpdateTime();
+        // std::cout << Time::GetTime() << std:: endl;
+
         
-        float sineOfTime = sin(time / 1.f)/2.f + 0.5f;
         //input
         processInput(window);
         
@@ -145,11 +150,14 @@ int main() {
         //clears Z-buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        const float radius = 3.f;
-        glm::vec3 lightPostion = glm::vec3(sin(time), 0.f, cos(time)) * radius;
+        // UPDATE GAMEOBJECTS
+        //-----------------------------------------------
+        for (int i = 0; i < gameObjects.size(); ++i) {
+            gameObjects[i].Update();
+        }
+
         
-        
-        // model rendering
+        // DRAWS
         //------------------------------------------------
 
         //matrices
@@ -165,19 +173,28 @@ int main() {
             glm::mat4 model = glm::mat4(1.f); // translate scale rotate
             model = glm::translate(model, gameObjects[i].transform.position);
             model = glm::scale(model, gameObjects[i].transform.scale);
+
             // model = glm::rotate(model, gameObjects[i].transform.rotation);
             gridShader.setMat4("model", model);
 
             //color
-            gridShader.setVec3("Color", glm::vec3(1.0f, 1.0f, 1.0f));
+            glm::vec3 Color(1.f);
+
+            switch (gameObjects[i]._state) {
+            case EGridState::unselected:
+                Color = glm::vec3(0.5f);
+                break;
+            case EGridState::selected:
+                Color = glm::vec3(1.f);
+                break;
+            }
+            gridShader.setVec3("Color", Color);
 
             //draws
             gridModel.Draw(gridShader);
         }
         
-
-
-        
+        // std::cout << camera.position.x << " " << camera.position.y << " " << camera.position.z << std::endl;
         
         gridModel.Draw(gridShader);
         
@@ -253,8 +270,10 @@ void processInput(GLFWwindow* window) {
 
     //movement
     glm::vec3 keyboardAxis = glm::vec3(0.f);
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         keyboardAxis.z += 1.f;
+        cout << "W" << std::endl;
+    }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         keyboardAxis.z += -1.f;
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
@@ -265,7 +284,8 @@ void processInput(GLFWwindow* window) {
         keyboardAxis.y += -1.f;
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
         keyboardAxis.y += 1.f;
-    camera.ProcessKeyboard(keyboardAxis, deltaTime);
+    camera.ProcessKeyboard(keyboardAxis, Time::GetDeltaTime());
+    // std::cout << Time::GetDeltaTime() << std::endl;
 }
 
 void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
@@ -288,44 +308,4 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
     else {
         camera.ProcessMouseScroll(yoffset, false);
     }
-}
-unsigned int loadTexture(const char* path) {
-    unsigned int texture;
-    glGenTextures(1, &texture);
-
-    
-
-    
-    
-    // load and generate texture
-    int width, height, nrChannels;
-    unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
-    if (data) {
-        GLenum format;
-        if (nrChannels == 1) {
-            format = GL_RED;
-        }
-        else if (nrChannels == 3) {
-            format = GL_RGB;
-        }
-        else if (nrChannels == 4) {
-            format = GL_RGBA;
-        }
-        
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, format,GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        
-    }
-    else {
-        std::cout << "ERROR::TEXTURE::LOAD_FAILED\n" << std::endl;
-    }
-
-    stbi_image_free(data); // free image memory
-    return texture;
 }
