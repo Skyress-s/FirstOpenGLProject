@@ -147,7 +147,6 @@
     <ClCompile Include="Soruce\stb_image.cpp" />
     <ClCompile Include="Soruce\Timer\Timer.cpp" />
     <ClCompile Include="Soruce\Transfrom\Transform.cpp" />
-    <ClCompile Include="Soruce\Unity\Component.cpp" />
     <ClInclude Include="Soruce\Timer\Timer.h" />
     <ClInclude Include="Soruce\Unity\enums.h" />
     <ClCompile Include="Soruce\Unity\GameObject.cpp">

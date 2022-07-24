@@ -24,7 +24,7 @@ void SimpleScaleAnimationComponent::Update(GameObject* test) {
         // test->transform.scale = glm::vec3(0.5f);
         // std::cout << "hey bebes : " << test->transform.scale.x << std::endl;
         
-        if (Time::GetTime() > 2.f + _startTime) {
+        if (Time::GetTime() > 0.05f + _startTime) {
             _bActiveAnim = false;
             test->transform.scale = glm::vec3(1.f);
         }

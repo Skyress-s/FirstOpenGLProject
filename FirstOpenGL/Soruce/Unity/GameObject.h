@@ -26,7 +26,7 @@ public:
     void AddComponent(Component* component) {
         _components.push_back(component);
     }
-
+    
     template<class T>
     T* GetComponent() {
         for (int i = 0; i < _components.size(); ++i) {
