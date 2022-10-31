@@ -2,6 +2,7 @@
 #define MODEL_H
 
 #include <glad/glad.h>
+#include <GLFWW/glfw3native.h>
 
 #include <glm/glm/glm.hpp>
 #include <glm/glm/gtc/matrix_transform.hpp>
