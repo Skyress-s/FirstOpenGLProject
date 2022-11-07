@@ -107,6 +107,9 @@ int main() {
     //light
     Shader lightShader("Shaders/LightContainer.svs", "Shaders/LightContainer.sfs");
     Model lightModel("Models/BlenderBox/aBox.obj");
+
+    // cubes
+    // Shader BoxShader("Shaders/SimpleEmissionV.glsl", "Shaders/SimpleEmissionF.glsl");
     
     
     // uncomment this call to draw in wireframe polygons.

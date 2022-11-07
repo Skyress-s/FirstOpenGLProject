@@ -148,6 +148,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />
+    <ClCompile Include="Shaders\SSimpleEmissionF.glsl" />
+    <ClCompile Include="Shaders\SSimpleEmissionV.glsl" />
     <ClCompile Include="Soruce\Shader.cpp" />
     <ClCompile Include="Soruce\stb_image.cpp" />
     <ClCompile Include="Source.cpp" />
