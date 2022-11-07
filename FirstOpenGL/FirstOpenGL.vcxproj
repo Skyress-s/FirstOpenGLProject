@@ -148,8 +148,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />
-    <ClCompile Include="Shaders\SSimpleEmissionF.glsl" />
-    <ClCompile Include="Shaders\SSimpleEmissionV.glsl" />
+    <ClCompile Include="Soruce\Line.cpp" />
+    <ClCompile Include="Soruce\AI\Djikstra.cpp" />
     <ClCompile Include="Soruce\Shader.cpp" />
     <ClCompile Include="Soruce\stb_image.cpp" />
     <ClCompile Include="Source.cpp" />
@@ -157,8 +157,11 @@
   <ItemGroup>
     <ClInclude Include="Soruce\Attenuation.h" />
     <ClInclude Include="Soruce\Camera.h" />
+    <ClInclude Include="Soruce\Line.h" />
     <ClInclude Include="Soruce\Mesh.h" />
     <ClInclude Include="Soruce\Model.h" />
+    <ClInclude Include="Soruce\AI\Djikstra.h" />
+    <ClInclude Include="Soruce\Random.h" />
     <ClInclude Include="Soruce\Shader.h" />
     <ClInclude Include="Soruce\stb_image.h" />
   </ItemGroup>

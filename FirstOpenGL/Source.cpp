@@ -1,26 +1,33 @@
 #include <iostream>
+#include <math.h>
+#define PI  3.14159265358979323846
+
 #include <glad/glad.h>
 #include <GLFWW/glfw3.h>
 // GLM OpenGL Mathematics
 //------------------------------------------------
 #include <glm/glm/glm.hpp>
-#include <glm/glm/glm.hpp>
 #include <glm/glm/gtc/matrix_transform.hpp>
 #include <glm/glm/gtc/type_ptr.hpp>
 
 //other
+#include <queue>
+#include <algorithm>
 #include "Soruce/Attenuation.h"
 #include "Soruce/Shader.h"
 #include "Soruce/stb_image.h"
 #include "Soruce/Camera.h"
 #include "Soruce/Model.h"
+#include "Soruce/Random.h"
+#include "Soruce/Line.h"
+#include "Soruce/AI/Djikstra.h"
 
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 //movement / camera
-Camera camera(glm::vec3(0.f,0.f,3.f));
+Camera camera(glm::vec3(0.f, 0.f, 3.f));
 float mouseLastX = SCR_WIDTH / 2.f;
 float mouseLastY = SCR_HEIGHT / 2.f;
 bool bFirstMouse = true;
@@ -44,20 +51,20 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 unsigned int loadTexture(const char* path);
 
 int main() {
-    
-    glm::mat4 mat(1);
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            mat[i][j] = 4 * i + j;
-        }
-    }
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            std::cout << mat[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
-    
+
+    // glm::mat4 mat(1);
+    // for (int i = 0; i < 4; ++i) {
+    //     for (int j = 0; j < 4; ++j) {
+    //         mat[i][j] = 4 * i + j;
+    //     }
+    // }
+    // for (int i = 0; i < 4; ++i) {
+    //     for (int j = 0; j < 4; ++j) {
+    //         std::cout << mat[i][j] << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
+
     //end testing
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -67,8 +74,7 @@ int main() {
 
 
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
-    if (window == NULL)
-    {
+    if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
@@ -77,8 +83,7 @@ int main() {
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     // glad: load all OpenGL function pointers
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
@@ -91,62 +96,127 @@ int main() {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     //setup mouse input callback
     glfwSetCursorPosCallback(window, mouseCallback);
-    
+
     //scroll callback
     glfwSetScrollCallback(window, scrollCallback);
-    
+
     //setting up depth test
     glEnable(GL_DEPTH_TEST);
 
-    
-    
+
     //custom models
-    Shader ourShader("Shaders/ShadedModelLoadV.glsl", "Shaders/ShadedModelLoadF.glsl");
-    Model ourModel("Models/backpack.obj");
+    // Shader ourShader("Shaders/ShadedModelLoadV.glsl", "Shaders/ShadedModelLoadF.glsl");
+    // Model ourModel("Models/backpack.obj");
 
     //light
     Shader lightShader("Shaders/LightContainer.svs", "Shaders/LightContainer.sfs");
     Model lightModel("Models/BlenderBox/aBox.obj");
 
     // cubes
-    // Shader BoxShader("Shaders/SimpleEmissionV.glsl", "Shaders/SimpleEmissionF.glsl");
+    Shader BoxShader("Shaders/SSimpleEmissionV.glsl", "Shaders/SSimpleEmissionF.glsl");
+    Model boxModel("Models/BlenderBox/aBox.obj");
+
+
+    // Generate random positions for box array
+    // ------------------------------------
     
+    // priority_queue<Dij::DijNode*, std::vector<Dij::DijNode*>, Dij::DijNodeComparator> DijQueue;
+    std::vector<Dij::DijNode*> dijNodes;
+    
+    int numNodes = 5;
+    float dijRange = 4.f;
+    for (int i = 0; i < numNodes; ++i) {
+        // find random point in unit sphere
+        float unitRadius = myRandom::GetRandomFloat(0, 1.f);
+        float px = myRandom::GetRandomFloat(-1, 1);
+        float py = myRandom::GetRandomFloat(-1, 1);
+        float pz = myRandom::GetRandomFloat(-1, 1);
+
+        float mag = sqrtf(px*px + py*py + pz*pz);
+        px /= mag;
+        py /= mag;
+        pz /= mag;
+
+        float c = std::pow(unitRadius, 1.f/3.f);
+        px *= c;
+        py *= c;
+        pz *= c;
+
+        glm::vec3 point(px,py,pz);
+        point *= 2.5f;
+        
+        dijNodes.push_back(new Dij::DijNode(point, myRandom::GetRandomFloat(0,100)));
+        
+        // push_heap(DijQueue.begin(), DijQueue.end(), Dij::DijNodeComparator());
+    }
+
+    // setup connections
+    for (int i = 0; i < dijNodes.size(); ++i) {
+        for (int j = 0; j < dijNodes.size(); ++j) {
+            // if (dijNodes[i] == dijNodes[j]) { // bail if itself
+                // continue;
+            // }
+
+            if (glm::distance(dijNodes[i]->position, dijNodes[j]->position) < dijRange) { // is distance under dijRange ?
+                dijNodes[i]->connections.push_back(dijNodes[j]);
+            }
+            
+        }
+
+        // if it does not have connection, add one
+        if (dijNodes[i]->connections.size() == 0) {
+            
+        }
+    }
+    
+    make_heap(dijNodes.begin(), dijNodes.end(), Dij::DijNodeComparator());
+    sort_heap(dijNodes.begin(), dijNodes.end(), Dij::DijNodeComparator());
+
+    
+    for (int i = 0; i < dijNodes.size(); ++i) {
+        std::cout << dijNodes[i]->val << std::endl;
+    }
+
     
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     //render loop
-    while (!glfwWindowShouldClose(window))
-    {
+    while (!glfwWindowShouldClose(window)) {
         //handlig time
         float time = glfwGetTime();
         deltaTime = time - lastFrame;
         lastFrame = time;
-        
-        float sineOfTime = sin(time / 1.f)/2.f + 0.5f;
+
+        float sineOfTime = sin(time / 1.f) / 2.f + 0.5f;
         //input
         processInput(window);
-        
-        
+
+
         //rendering commands
         //clears and sets color buffer
         glClearColor(0.2f, 0.1f, 0.4f, 1.f);
-        
+
         //clears Z-buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         const float radius = 3.f;
         glm::vec3 lightPostion = glm::vec3(sin(time), 0.f, cos(time)) * radius;
-        
-        
+
+
+        glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f,
+                                                100.0f);
+        glm::mat4 view = camera.GetViewMatrix();
+        /*
         // model rendering
         //------------------------------------------------
-        
+
         // don't forget to enable shader before setting uniforms
         ourShader.use();
 
         // set params to model
         Attenuation::setDistance(EAttenuationDistance::E100);
-        ourShader.setVec3("pointLights[0].position",lightPostion);
+        ourShader.setVec3("pointLights[0].position", lightPostion);
         ourShader.setFloat("pointLights[0].constant", Attenuation::current.constant);
         ourShader.setFloat("pointLights[0].linear", Attenuation::current.linear);
         ourShader.setFloat("pointLights[0].quadratic", Attenuation::current.quadratic);
@@ -157,24 +227,23 @@ int main() {
         ourShader.setVec3("viewPos", camera.position);
 
         // view/projection transformations
-        glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        glm::mat4 view = camera.GetViewMatrix();
         ourShader.setMat4("projection", projection);
         ourShader.setMat4("view", view);
 
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+        // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f)); // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
 
-        
         // render the loaded model
         ourModel.Draw(ourShader);
+        */
+
 
         //light rendering
         //------------------------------------------------
         lightShader.use();
-        
+
         lightShader.setMat4("projection", projection);
         lightShader.setMat4("view", view);
         model = glm::mat4(1.f);
@@ -184,19 +253,68 @@ int main() {
 
         //color
         lightShader.setVec3("lightColor", glm::vec3(1.f));
-
         lightModel.Draw(lightShader);
-        
-        
-        
+
+
+        // draw box
+        BoxShader.use();
+        BoxShader.setVec3("lightColor", glm::vec3(1, 1, 1));
+        BoxShader.setMat4("projection", projection);
+        BoxShader.setMat4("view", view);
+
+
+        // Dijsktra
+        // -----------------
+        for (int i = 0; i < dijNodes.size(); ++i) {
+            BoxShader.use();
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, dijNodes[i]->position);
+            model = glm::scale(model, glm::vec3(0.5f));
+            BoxShader.setMat4("model", model);
+
+            boxModel.Draw(BoxShader);
+
+
+            // draw connections
+            for (int j = 0; j < dijNodes[i]->connections.size(); ++j) {
+                Line line(dijNodes[i]->position, dijNodes[i]->connections[j]->position);
+                line.setMVP(projection * view * glm::mat4(1));
+                line.setColor(glm::vec3(0,0,1));
+                line.draw();
+            }
+        }
 
         
+        // DikQueue.push(node1);
+
+        // Drawing origin axis lines
+        // --------------------
+        Line xLine(glm::vec3(0.f), glm::vec3(1, 0, 0));
+        model = glm::mat4(1);
+        xLine.setMVP(projection * view * model);
+        xLine.setColor(glm::vec3(1, 0, 0));
+        xLine.draw();
+
+        Line yLine(glm::vec3(0.f), glm::vec3(0, 1, 0));
+        yLine.setMVP(projection * view * model);
+        yLine.setColor(glm::vec3(0, 1, 0));
+        yLine.draw();
+
+        Line zLine(glm::vec3(0.f), glm::vec3(0, 0, 1));
+        zLine.setMVP(projection * view * model);
+        zLine.setColor(glm::vec3(0, 0, 1));
+        zLine.draw();
+
+
         //swap buffers and check and call events
+        // ----------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
     glfwTerminate();
+
+
     return 0;
 }
 
@@ -235,9 +353,10 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
     float offsetY = ypos - mouseLastY;
     mouseLastX = xpos;
     mouseLastY = ypos;
-    
+
     camera.ProcessMouseMovement(offsetX, offsetY, true, true);
 }
+
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
         camera.ProcessMouseScroll(yoffset, true);
@@ -246,14 +365,12 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
         camera.ProcessMouseScroll(yoffset, false);
     }
 }
+
 unsigned int loadTexture(const char* path) {
     unsigned int texture;
     glGenTextures(1, &texture);
 
-    
 
-    
-    
     // load and generate texture
     int width, height, nrChannels;
     unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
@@ -268,7 +385,7 @@ unsigned int loadTexture(const char* path) {
         else if (nrChannels == 4) {
             format = GL_RGBA;
         }
-        
+
         glBindTexture(GL_TEXTURE_2D, texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, format,GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -277,7 +394,7 @@ unsigned int loadTexture(const char* path) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        
+
     }
     else {
         std::cout << "ERROR::TEXTURE::LOAD_FAILED\n" << std::endl;
