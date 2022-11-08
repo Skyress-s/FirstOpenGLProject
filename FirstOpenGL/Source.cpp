@@ -6,13 +6,15 @@
 #include <GLFWW/glfw3.h>
 // GLM OpenGL Mathematics
 //------------------------------------------------
-#include <glm/glm/glm.hpp>
-#include <glm/glm/gtc/matrix_transform.hpp>
-#include <glm/glm/gtc/type_ptr.hpp>
+// #include <glm/glm/glm.hpp>
+// #include <glm/glm/gtc/matrix_transform.hpp>
+// #include <glm/glm/gtc/type_ptr.hpp>
 
 //other
 #include <queue>
 #include <algorithm>
+#include <functional>
+
 #include "Soruce/Attenuation.h"
 #include "Soruce/Shader.h"
 #include "Soruce/stb_image.h"
@@ -20,7 +22,8 @@
 #include "Soruce/Model.h"
 #include "Soruce/Random.h"
 #include "Soruce/Line.h"
-#include "Soruce/AI/Djikstra.h"
+#include "Soruce/AI/DijsktraHandler.h"
+#include "Soruce/AI/DijNode.h"
 
 
 const unsigned int SCR_WIDTH = 800;
@@ -50,8 +53,12 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
 unsigned int loadTexture(const char* path);
 
+typedef std::pair<int, float> TestPair;
+
 int main() {
 
+ 
+    
     // glm::mat4 mat(1);
     // for (int i = 0; i < 4; ++i) {
     //     for (int j = 0; j < 4; ++j) {
@@ -96,9 +103,11 @@ int main() {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     //setup mouse input callback
     glfwSetCursorPosCallback(window, mouseCallback);
+    
 
     //scroll callback
     glfwSetScrollCallback(window, scrollCallback);
+    
 
     //setting up depth test
     glEnable(GL_DEPTH_TEST);
@@ -119,65 +128,10 @@ int main() {
 
     // Generate random positions for box array
     // ------------------------------------
-    
-    // priority_queue<Dij::DijNode*, std::vector<Dij::DijNode*>, Dij::DijNodeComparator> DijQueue;
-    std::vector<Dij::DijNode*> dijNodes;
-    
-    int numNodes = 5;
-    float dijRange = 4.f;
-    for (int i = 0; i < numNodes; ++i) {
-        // find random point in unit sphere
-        float unitRadius = myRandom::GetRandomFloat(0, 1.f);
-        float px = myRandom::GetRandomFloat(-1, 1);
-        float py = myRandom::GetRandomFloat(-1, 1);
-        float pz = myRandom::GetRandomFloat(-1, 1);
-
-        float mag = sqrtf(px*px + py*py + pz*pz);
-        px /= mag;
-        py /= mag;
-        pz /= mag;
-
-        float c = std::pow(unitRadius, 1.f/3.f);
-        px *= c;
-        py *= c;
-        pz *= c;
-
-        glm::vec3 point(px,py,pz);
-        point *= 2.5f;
-        
-        dijNodes.push_back(new Dij::DijNode(point, myRandom::GetRandomFloat(0,100)));
-        
-        // push_heap(DijQueue.begin(), DijQueue.end(), Dij::DijNodeComparator());
-    }
-
-    // setup connections
-    for (int i = 0; i < dijNodes.size(); ++i) {
-        for (int j = 0; j < dijNodes.size(); ++j) {
-            // if (dijNodes[i] == dijNodes[j]) { // bail if itself
-                // continue;
-            // }
-
-            if (glm::distance(dijNodes[i]->position, dijNodes[j]->position) < dijRange) { // is distance under dijRange ?
-                dijNodes[i]->connections.push_back(dijNodes[j]);
-            }
-            
-        }
-
-        // if it does not have connection, add one
-        if (dijNodes[i]->connections.size() == 0) {
-            
-        }
-    }
-    
-    make_heap(dijNodes.begin(), dijNodes.end(), Dij::DijNodeComparator());
-    sort_heap(dijNodes.begin(), dijNodes.end(), Dij::DijNodeComparator());
-
-    
-    for (int i = 0; i < dijNodes.size(); ++i) {
-        std::cout << dijNodes[i]->val << std::endl;
-    }
-
-    
+    Dij::DijsktraHandler dijsktraHandler(25, 3.f);
+    dijsktraHandler.FindShortestPath();
+    // return 0;
+    // dijsktraHandler.DebugDijNodes();
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     //render loop
@@ -258,33 +212,30 @@ int main() {
 
         // draw box
         BoxShader.use();
-        BoxShader.setVec3("lightColor", glm::vec3(1, 1, 1));
         BoxShader.setMat4("projection", projection);
         BoxShader.setMat4("view", view);
 
 
         // Dijsktra
         // -----------------
-        for (int i = 0; i < dijNodes.size(); ++i) {
+
+        // draw all cubes
+        for (int i = 0; i < dijsktraHandler.dijNodes.size(); ++i) {
             BoxShader.use();
             model = glm::mat4(1.0f);
-            model = glm::translate(model, dijNodes[i]->position);
-            model = glm::scale(model, glm::vec3(0.5f));
+            model = glm::translate(model, dijsktraHandler.dijNodes[i]->position);
+            model = glm::scale(model, glm::vec3(0.2f));
             BoxShader.setMat4("model", model);
 
+
+            glm::vec3 cubeColor = dijsktraHandler.dijNodes[i]->color;
+            
+            BoxShader.setVec3("lightColor", cubeColor);
+            
             boxModel.Draw(BoxShader);
-
-
-            // draw connections
-            for (int j = 0; j < dijNodes[i]->connections.size(); ++j) {
-                Line line(dijNodes[i]->position, dijNodes[i]->connections[j]->position);
-                line.setMVP(projection * view * glm::mat4(1));
-                line.setColor(glm::vec3(0,0,1));
-                line.draw();
-            }
         }
+        dijsktraHandler.DrawEdges(projection * view * glm::mat4(1));
 
-        
         // DikQueue.push(node1);
 
         // Drawing origin axis lines

@@ -148,19 +148,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />
+    <ClCompile Include="Soruce\AI\DijEdge.cpp" />
+    <ClCompile Include="Soruce\AI\DijsktraHandler.cpp" />
     <ClCompile Include="Soruce\Line.cpp" />
-    <ClCompile Include="Soruce\AI\Djikstra.cpp" />
+    <ClCompile Include="Soruce\AI\DijNode.cpp" />
+    <ClCompile Include="Soruce\Random.cpp" />
     <ClCompile Include="Soruce\Shader.cpp" />
     <ClCompile Include="Soruce\stb_image.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Soruce\AI\DijEdge.h" />
+    <ClInclude Include="Soruce\AI\DijsktraHandler.h" />
     <ClInclude Include="Soruce\Attenuation.h" />
     <ClInclude Include="Soruce\Camera.h" />
     <ClInclude Include="Soruce\Line.h" />
     <ClInclude Include="Soruce\Mesh.h" />
     <ClInclude Include="Soruce\Model.h" />
-    <ClInclude Include="Soruce\AI\Djikstra.h" />
+    <ClInclude Include="Soruce\AI\DijNode.h" />
     <ClInclude Include="Soruce\Random.h" />
     <ClInclude Include="Soruce\Shader.h" />
     <ClInclude Include="Soruce\stb_image.h" />

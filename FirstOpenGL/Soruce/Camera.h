@@ -88,7 +88,7 @@ public:
         }
         else {
             speed += yoffset;
-            speed = speed > 100.f ? 100.f : speed;
+            speed = speed > 115.f ? 115.f : speed;
             speed = speed < 1.f ? 1.f : speed;
         }
     }
@@ -104,8 +104,8 @@ private:
         front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
         forward = glm::normalize(front);
         // also re-calculate the Right and Up vector
-        right = glm::normalize(glm::cross(forward, worldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-        up    = glm::normalize(glm::cross(right, forward));
+        right   = glm::normalize(glm::cross(forward, worldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+        up      = glm::normalize(glm::cross(right, forward));
     }
 
     glm::mat4 SelfLookAtImplementation(glm::vec3 _position, glm::vec3 _target, glm::vec3 _up) {
