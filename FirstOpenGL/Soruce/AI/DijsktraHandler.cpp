@@ -37,12 +37,14 @@ Dij::DijsktraHandler::DijsktraHandler(int nodes, float sphereSize) {
 
     }
 
-    startNode = myRandom::GetRandomInt(0, nodes);
-    endNode = myRandom::GetRandomInt(0, nodes);
+    int startNodeIndex = myRandom::GetRandomInt(0, nodes);
+    int endNodeIndex = myRandom::GetRandomInt(0, nodes);
 
-    dijNodes[startNode]->color = glm::vec3(0, 1, 0);
-    dijNodes[endNode]->color = glm::vec3(1, 0, 0);
-
+    dijNodes[startNodeIndex]->color = glm::vec3(0, 1, 0);
+    dijNodes[endNodeIndex]->color = glm::vec3(1, 0, 0);
+    
+    startNode = dijNodes[startNodeIndex];
+    endNode = dijNodes[endNodeIndex];
 
     // making into priority list   
     make_heap(dijNodes.begin(), dijNodes.end(), Dij::DijNodeComparator());
@@ -64,36 +66,33 @@ void Dij::DijsktraHandler::FindShortestPath() {
     int x = 0;
     // while (x < 1) {
     x++;
-    DijNode* current = dijNodes[startNode];
+    DijNode* current = startNode;
     current->bVisited = true;
 
     for (int i = 0; i < current->edges.size(); ++i) {
         DijNode* other = current->edges[i]->GetOther(current);
         // bail
-        // if (other->bVisited)
-        // continue;
+        if (other->bVisited)
+        continue;
 
-        // float distanceToNode = current->distance + current->edges[i]->distance;
+        float distanceToNode = current->distance + current->edges[i]->distance;
 
-        // if (distanceToNode < other->distance) {
-            // other->distance = distanceToNode;
-        // }
+        if (distanceToNode < other->distance) {
+            other->distance = distanceToNode;
+        }
 
 
-        // debug
-        other->color = glm::vec3(0, 0, 1);
-        // }
 
-        // make_heap(dijNodes.begin(), dijNodes.end(), DijNodeComparator());
-        // sort_heap(dijNodes.begin(), dijNodes.end(), DijNodeComparator());
+        make_heap(dijNodes.begin(), dijNodes.end(), DijNodeComparator());
+        sort_heap(dijNodes.begin(), dijNodes.end(), DijNodeComparator());
+
         // travel to next node
+        pop_heap(dijNodes.begin(), dijNodes.end(), DijNodeComparator());
+        finishedDijNodes.push_back(dijNodes.back());
+        dijNodes.pop_back();
 
-        // pop_heap(dijNodes.begin(), dijNodes.end(), DijNodeComparator());
-        // finishedDijNodes.push_back(dijNodes.back());
-        // dijNodes.pop_back();
-
-        // make_heap(dijNodes.begin(), dijNodes.end(), DijNodeComparator());
-        // sort_heap(dijNodes.begin(), dijNodes.end(), DijNodeComparator());
+        make_heap(dijNodes.begin(), dijNodes.end(), DijNodeComparator());
+        sort_heap(dijNodes.begin(), dijNodes.end(), DijNodeComparator());
     }
 
     DebugDijNodes();

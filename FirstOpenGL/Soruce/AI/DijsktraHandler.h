@@ -20,8 +20,8 @@ namespace Dij {
         // config
         int nodes{};
         float sphereSize{};
-        int startNode;
-        int endNode;
+        DijNode* startNode{};
+        DijNode* endNode{};
 
         // construct destrcts
         DijsktraHandler(int nodes, float sphereSize);

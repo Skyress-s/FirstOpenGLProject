@@ -22,6 +22,7 @@
 #include "Soruce/Model.h"
 #include "Soruce/Random.h"
 #include "Soruce/Line.h"
+#include "Soruce/AI/DijEdge.h"
 #include "Soruce/AI/DijsktraHandler.h"
 #include "Soruce/AI/DijNode.h"
 
@@ -130,6 +131,13 @@ int main() {
     // ------------------------------------
     Dij::DijsktraHandler dijsktraHandler(25, 3.f);
     dijsktraHandler.FindShortestPath();
+    // dijsktraHandler.FindShortestPath();
+    // auto cur = dijsktraHandler.dijNodes[0];
+    // cur->color = glm::vec3(1,1,0);
+    // for (int i = 0; i < cur->edges.size(); ++i) {
+        // cur->edges[i]->color = glm::vec3(0,0,0.1f);
+        // cur->edges[i]->GetOther(cur)->color = glm::vec3(1,1,0);
+    // }
     // return 0;
     // dijsktraHandler.DebugDijNodes();
     // uncomment this call to draw in wireframe polygons.
