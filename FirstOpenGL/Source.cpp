@@ -129,7 +129,7 @@ int main() {
 
     // Generate random positions for box array
     // ------------------------------------
-    Dij::DijsktraHandler dijsktraHandler(25, 3.f);
+    Dij::DijsktraHandler dijsktraHandler(45, 5.f);
     dijsktraHandler.FindShortestPath();
     // dijsktraHandler.FindShortestPath();
     // auto cur = dijsktraHandler.dijNodes[0];
@@ -242,6 +242,23 @@ int main() {
             
             boxModel.Draw(BoxShader);
         }
+
+        // draw shearched noed
+        for (int i = 0; i < dijsktraHandler.finishedDijNodes.size(); ++i) {
+            BoxShader.use();
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, dijsktraHandler.finishedDijNodes[i]->position);
+            model = glm::scale(model, glm::vec3(0.2f));
+            BoxShader.setMat4("model", model);
+
+
+            glm::vec3 cubeColor = dijsktraHandler.finishedDijNodes[i]->color;// * 0.5f;
+            
+            BoxShader.setVec3("lightColor", cubeColor);
+            
+            boxModel.Draw(BoxShader);
+        }
+        
         dijsktraHandler.DrawEdges(projection * view * glm::mat4(1));
 
         // DikQueue.push(node1);

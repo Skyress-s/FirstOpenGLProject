@@ -42,9 +42,11 @@ Dij::DijsktraHandler::DijsktraHandler(int nodes, float sphereSize) {
 
     dijNodes[startNodeIndex]->color = glm::vec3(0, 1, 0);
     dijNodes[endNodeIndex]->color = glm::vec3(1, 0, 0);
-    
+
     startNode = dijNodes[startNodeIndex];
     endNode = dijNodes[endNodeIndex];
+
+    startNode->distance = 0;
 
     // making into priority list   
     make_heap(dijNodes.begin(), dijNodes.end(), Dij::DijNodeComparator());
@@ -59,49 +61,109 @@ void Dij::DijsktraHandler::DrawEdges(glm::mat4 MVP) {
 }
 
 void Dij::DijsktraHandler::FindShortestPath() {
-    // setup start
-    // dijNodes[startNode]->distance = 0;
-    // make_heap(dijNodes.begin(), dijNodes.end(), DijNodeComparator());
-    // sort_heap(dijNodes.begin(), dijNodes.end(), DijNodeComparator());
-    int x = 0;
-    // while (x < 1) {
-    x++;
+
     DijNode* current = startNode;
-    current->bVisited = true;
 
-    for (int i = 0; i < current->edges.size(); ++i) {
-        DijNode* other = current->edges[i]->GetOther(current);
-        // bail
-        if (other->bVisited)
-        continue;
+    bool bFoundEnd = false;
+    
+    int x = 0;
+    while (x < nodes * 2) {
+        x++;
+        current->bVisited = true;
 
-        float distanceToNode = current->distance + current->edges[i]->distance;
+        for (int i = 0; i < current->edges.size(); ++i) {
+            DijNode* other = current->edges[i]->GetOther(current);
+            // bail
+            if (other->bVisited)
+                continue;
 
-        if (distanceToNode < other->distance) {
-            other->distance = distanceToNode;
+            float distanceToNode = current->distance + current->edges[i]->distance;
+
+            std::cout << "distance to node!" << distanceToNode << std::endl;
+            // decrease if lower
+            if (distanceToNode < other->distance) {
+                other->distance = distanceToNode;
+                other->from = current;
+            }
+
+            if (other == endNode) {
+                endNode->from = current;
+                bFoundEnd = true;
+                break;
+            }
+
         }
 
+        if (bFoundEnd) {
+            break;
+        }
+        
+        // has gone tgrough all edges
+        Pop();
+        
+        // sets shortest to new current
+        // dijNodes[0]->from = current;
+        current = dijNodes[0];
 
 
-        make_heap(dijNodes.begin(), dijNodes.end(), DijNodeComparator());
-        sort_heap(dijNodes.begin(), dijNodes.end(), DijNodeComparator());
-
-        // travel to next node
-        pop_heap(dijNodes.begin(), dijNodes.end(), DijNodeComparator());
-        finishedDijNodes.push_back(dijNodes.back());
-        dijNodes.pop_back();
-
-        make_heap(dijNodes.begin(), dijNodes.end(), DijNodeComparator());
-        sort_heap(dijNodes.begin(), dijNodes.end(), DijNodeComparator());
     }
 
+    // make sure to pop end node
+    Pop();
+
     DebugDijNodes();
+
+    // return;
+    // display path
+    int y = 0;
+    DijNode* ja = endNode;
+    while (y < nodes * 2) {
+        y++;
+        std::cout << " FROM : " << ja->from << std::endl;
+        ja->color = glm::vec3(1,1,0);
+        if (ja->from != nullptr) {
+            DijEdge* edge = ja->GetEdge(ja->from);
+            if (edge != nullptr) {
+                
+                edge->color = glm::vec3(0,1,0);
+            }
+            ja = ja->from;
+        }
+        else {
+            break;
+        }
+
+    }
+
+    startNode->color = glm::vec3(0,1,0);
+    endNode->color = glm::vec3(1,0,0);
+    
 }
 
 void Dij::DijsktraHandler::DebugDijNodes() {
+    std::cout << "Nodes" << std::endl;
     for (int i = 0; i < dijNodes.size(); ++i) {
-        std::cout << i << " | " << dijNodes[i]->ToString() << std::endl;
+        std::cout << i << " | " << dijNodes[i]->distance << std::endl;
     }
+    std::cout << "|" << std::endl;
+    std::cout << "FinishedNodes" << std::endl;
+    for (int i = 0; i < finishedDijNodes.size(); ++i) {
+        std::cout << i << " | " << finishedDijNodes[i]->distance << std::endl;
+    }
+}
+
+void Dij::DijsktraHandler::Pop() {
+    Prioritize();
+    // travel to next node
+    pop_heap(dijNodes.begin(), dijNodes.end(), DijNodeComparator());
+    finishedDijNodes.push_back(dijNodes.back());
+    dijNodes.pop_back();
+    Prioritize();
+}
+
+void Dij::DijsktraHandler::Prioritize() {
+    make_heap(dijNodes.begin(), dijNodes.end(), DijNodeComparator());
+    sort_heap(dijNodes.begin(), dijNodes.end(), DijNodeComparator());
 }
 
 std::vector<Dij::DijNode*> Dij::DijsktraHandler::FindXClosestNodes(int x, DijNode* current) {

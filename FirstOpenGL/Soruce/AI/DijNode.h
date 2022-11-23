@@ -13,8 +13,8 @@ namespace Dij {
         glm::vec3 position{};
         DijNode* from = nullptr;
         std::vector<class DijEdge*> edges;
-        float heuristic{};
-        float distance = INFINITY;
+        float heuristic;
+        float distance;
         bool bVisited;
         glm::vec3 color{1};
 
@@ -23,6 +23,8 @@ namespace Dij {
         std::string ToString();
 
         bool HasEdge(DijEdge* edge);
+
+        DijEdge* GetEdge(DijNode* node);
     };
 
     

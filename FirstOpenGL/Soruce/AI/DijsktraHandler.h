@@ -32,6 +32,10 @@ namespace Dij {
 
         void DebugDijNodes();
 
+        void Pop();
+
+        void Prioritize();
+
     private:
         
         // helper methods

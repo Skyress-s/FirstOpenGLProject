@@ -8,15 +8,16 @@ namespace Dij {
     DijNode::DijNode(glm::vec3 position, float heuristic) {
         this->position = position;
         this->heuristic = heuristic;
-        distance = INFINITY;
+        distance = 100000;
         bVisited = false;
+        from = nullptr;
     }
 
     std::string DijNode::ToString() {
         // std::string retVal = std::to_string(distance) + " x:" + std::to_string(position.x) +" y: "
         // +std::to_string(position.y) +" z: "
         // +std::to_string(position.z) + " ";
-        std::string retVal = std::to_string(distance) + " from:";
+        std::string retVal = std::to_string(distance);
         return retVal;
     }
 
@@ -31,6 +32,15 @@ namespace Dij {
             }
         }
         return false;
+    }
+
+    DijEdge* DijNode::GetEdge(DijNode* node) {
+        for (int i = 0; i < edges.size(); ++i) {
+            if (edges[i]->GetOther(node) != nullptr) {
+                return edges[i];
+            }
+        }
+        return nullptr;
     }
 
     bool DijNodeComparator::operator()(const DijNode* l, const DijNode* r) {
