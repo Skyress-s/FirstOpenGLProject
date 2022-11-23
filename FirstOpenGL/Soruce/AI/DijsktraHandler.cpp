@@ -14,8 +14,11 @@ Dij::DijsktraHandler::DijsktraHandler(int nodes, float sphereSize) {
     for (int i = 0; i < nodes; ++i) {
 
         glm::vec3 point = myRandom::GetRandomInsideUnitSphere() * 3.5f;
+        // DijNode noewNode* = new DijNode(point);
 
-        dijNodes.push_back(new Dij::DijNode(point, myRandom::GetRandomFloat(0, 100)));
+        DijNode* newNode = new DijNode(point);
+        
+        dijNodes.push_back(newNode);
     }
 
     // setting up edges
@@ -48,6 +51,12 @@ Dij::DijsktraHandler::DijsktraHandler(int nodes, float sphereSize) {
 
     startNode->distance = 0;
 
+    // setting heuristics
+    for (int i = 0; i < nodes; ++i) {
+        dijNodes[i]->heuristic = GetHuerstic(dijNodes[i]);
+    }
+    
+
     // making into priority list   
     make_heap(dijNodes.begin(), dijNodes.end(), Dij::DijNodeComparator());
     sort_heap(dijNodes.begin(), dijNodes.end(), Dij::DijNodeComparator());
@@ -78,6 +87,7 @@ void Dij::DijsktraHandler::FindShortestPath() {
                 continue;
 
             float distanceToNode = current->distance + current->edges[i]->distance;
+            float g = current->distance + current->edges[i]->distance;
 
             std::cout << "distance to node!" << distanceToNode << std::endl;
             // decrease if lower
@@ -138,6 +148,10 @@ void Dij::DijsktraHandler::FindShortestPath() {
     startNode->color = glm::vec3(0,1,0);
     endNode->color = glm::vec3(1,0,0);
     
+}
+
+float Dij::DijsktraHandler::GetHuerstic(Dij::DijNode* node) {
+    return glm::distance(node->position, endNode->position);
 }
 
 void Dij::DijsktraHandler::DebugDijNodes() {

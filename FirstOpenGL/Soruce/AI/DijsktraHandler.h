@@ -30,6 +30,8 @@ namespace Dij {
 
         void FindShortestPath();
 
+        float GetHuerstic(DijNode* node);
+
         void DebugDijNodes();
 
         void Pop();

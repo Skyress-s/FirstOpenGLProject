@@ -18,7 +18,7 @@ namespace Dij {
         bool bVisited;
         glm::vec3 color{1};
 
-        DijNode(glm::vec3 position, float heuristic);
+        DijNode(glm::vec3 position);
         
         std::string ToString();
 

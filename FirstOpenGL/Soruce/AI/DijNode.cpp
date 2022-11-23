@@ -5,9 +5,9 @@
 namespace Dij {
 
 
-    DijNode::DijNode(glm::vec3 position, float heuristic) {
+    DijNode::DijNode(glm::vec3 position) {
         this->position = position;
-        this->heuristic = heuristic;
+        heuristic = 10000;
         distance = 100000;
         bVisited = false;
         from = nullptr;
@@ -43,7 +43,10 @@ namespace Dij {
         return nullptr;
     }
 
-    bool DijNodeComparator::operator()(const DijNode* l, const DijNode* r) {
-        return l->distance < r->distance;
+    // bool DijNodeComparator::operator()(const DijNode* l, const DijNode* r) { // DIJKSTRA
+    // return l->distance < r->distance;
+    // }
+    bool DijNodeComparator::operator()(const DijNode* l, const DijNode* r) { // ASTAR
+        return (l->distance + l->heuristic) < (r->distance + r->heuristic);
     }
 }

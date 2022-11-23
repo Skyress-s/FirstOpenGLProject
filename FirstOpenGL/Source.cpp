@@ -129,7 +129,7 @@ int main() {
 
     // Generate random positions for box array
     // ------------------------------------
-    Dij::DijsktraHandler dijsktraHandler(45, 5.f);
+    Dij::DijsktraHandler dijsktraHandler(66, 5.f);
     dijsktraHandler.FindShortestPath();
     // dijsktraHandler.FindShortestPath();
     // auto cur = dijsktraHandler.dijNodes[0];
@@ -252,7 +252,7 @@ int main() {
             BoxShader.setMat4("model", model);
 
 
-            glm::vec3 cubeColor = dijsktraHandler.finishedDijNodes[i]->color;// * 0.5f;
+            glm::vec3 cubeColor = dijsktraHandler.finishedDijNodes[i]->color * 0.7f;
             
             BoxShader.setVec3("lightColor", cubeColor);
             
