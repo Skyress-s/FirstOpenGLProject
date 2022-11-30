@@ -25,6 +25,8 @@ namespace Dij {
         bool HasEdge(DijEdge* edge);
 
         DijEdge* GetEdge(DijNode* node);
+
+        // operator float() const {return 1.f;} // the (float)ClassInstance operator
     };
 
     
