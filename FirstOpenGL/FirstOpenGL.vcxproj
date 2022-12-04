@@ -191,6 +191,8 @@
     <Content Include="Shaders\ModelLoadV.glsl" />
     <Content Include="Shaders\ShadedModelLoadF.glsl" />
     <Content Include="Shaders\ShadedModelLoadV.glsl" />
+    <Content Include="Shaders\SSimpleEmissionF.glsl" />
+    <Content Include="Shaders\SSimpleEmissionV.glsl" />
     <Content Include="Textures\awesomeface.png" />
     <Content Include="Textures\container.jpg" />
     <Content Include="Textures\container2.png" />

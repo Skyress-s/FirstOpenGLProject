@@ -34,7 +34,7 @@ Dij::DijsktraHandler::DijsktraHandler(int nodes, float sphereSize) {
             if (!edge->second->HasEdge(edge)) {
                 edge->second->edges.push_back(edge);
             }
-
+            
             dijEdges.push_back(edge);
         }
 
@@ -101,7 +101,6 @@ void Dij::DijsktraHandler::FindShortestPath() {
                 bFoundEnd = true;
                 break;
             }
-
         }
 
         if (bFoundEnd) {
@@ -114,8 +113,6 @@ void Dij::DijsktraHandler::FindShortestPath() {
         // sets shortest to new current
         // dijNodes[0]->from = current;
         current = dijNodes[0];
-
-
     }
 
     // make sure to pop end node
